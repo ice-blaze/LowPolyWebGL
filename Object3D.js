@@ -40,8 +40,8 @@ class Object3D {
 
     GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)
-    GL.drawElements(GL.TRIANGLES, this.faces.length, GL.UNSIGNED_SHORT, 0)
     GL.drawArrays(GL.POINTS, 0, this.vertices.length/9)
+    GL.drawElements(GL.TRIANGLES, this.faces.length, GL.UNSIGNED_SHORT, 0)
   }
 
   translateX(){

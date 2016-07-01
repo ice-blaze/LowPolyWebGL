@@ -1,9 +1,10 @@
 "use strict"
 
 class Trunk extends Object3D{
-  constructor(GL, radiusTop, radiusBot, NB_FACES, height, r, g, b){
+  constructor(GL, SHADER_PROGRAM, radiusTop, radiusBot, NB_FACES, height, r, g, b){
     super(GL)
 
+    this.SHADER_PROGRAM = SHADER_PROGRAM
     this.radiusTop = radiusTop
     this.radiusBot = radiusBot
     this.NB_FACES = NB_FACES
@@ -14,7 +15,25 @@ class Trunk extends Object3D{
 
     this.generateTrunk()
 
+    this._color = GL.getAttribLocation(SHADER_PROGRAM, "color")
+    this._normal = GL.getAttribLocation(SHADER_PROGRAM, "normal")
+    this._position = GL.getAttribLocation(SHADER_PROGRAM, "position")
+
+    GL.enableVertexAttribArray(this._color)
+    GL.enableVertexAttribArray(this._normal)
+    GL.enableVertexAttribArray(this._position)
+
     this.initBuffers()
+  }
+
+  draw(){
+    let GL = this.GL
+
+    GL.vertexAttribPointer(this._position, 3, GL.FLOAT, false,4*(3+3+3),0) // qu'est-ce qui se passe ici ?
+    GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false,4*(3+3+3),3*4)
+    GL.vertexAttribPointer(this._normal, 3, GL.FLOAT, false,4*(3+3+3),(3+3)*4)
+
+    super.draw()
   }
 
   generateTrunk(){

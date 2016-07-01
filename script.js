@@ -95,20 +95,12 @@ var main=function() {
   var _Vmatrix = GL.getUniformLocation(SHADER_PROGRAM, "Vmatrix")
   var _Mmatrix = GL.getUniformLocation(SHADER_PROGRAM, "Mmatrix")
 
-  var _color = GL.getAttribLocation(SHADER_PROGRAM, "color")
-  var _normal = GL.getAttribLocation(SHADER_PROGRAM, "normal")
-  var _position = GL.getAttribLocation(SHADER_PROGRAM, "position")
-
-  GL.enableVertexAttribArray(_color)
-  GL.enableVertexAttribArray(_normal)
-  GL.enableVertexAttribArray(_position)
-
   GL.useProgram(SHADER_PROGRAM)
-
   // var tree = LIBS.drawTrunk(1,2,6,3,0.5,0.13,0.)
   // var tree2 = LIBS.drawTrunk(1,2,12,3,0.5,0.13,0.)
-  var trunk = new Trunk(GL, 1, 2, 6, 3, 0.5, 0.13, 0.)
-  // var trunk2 = new Trunk(GL, tree2.vertices, tree2.faces, 1, 2, 6, 3, 0.5, 0.13, 0.)
+  var trunk = new Trunk(GL, SHADER_PROGRAM, 1, 2, 6, 3, 0.5, 0.13, 0.)
+  var trunk2 = new Trunk(GL, SHADER_PROGRAM, 1, 1, 6, 3, 0.5, 1., 0.)
+
 
   /*========================= MATRIX ========================= */
 
@@ -129,7 +121,7 @@ var main=function() {
     var dt=time-time_old
     // LIBS.rotateY(VIEWMATRIX, dt*0.001)
     // LIBS.rotateZ(MOVEMATRIX, dt*0.002)
-    // LIBS.rotateX(MOVEMATRIX, dt*0.0015)
+    LIBS.rotateX(MOVEMATRIX, dt*0.0015)
 
     time_old=time
 
@@ -140,12 +132,9 @@ var main=function() {
     GL.uniformMatrix4fv(_Vmatrix, false, VIEWMATRIX)
     GL.uniformMatrix4fv(_Mmatrix, false, MOVEMATRIX)
 
-    GL.vertexAttribPointer(_position, 3, GL.FLOAT, false,4*(3+3+3),0) // qu'est-ce qui se passe ici ?
-    GL.vertexAttribPointer(_color, 3, GL.FLOAT, false,4*(3+3+3),3*4)
-    GL.vertexAttribPointer(_normal, 3, GL.FLOAT, false,4*(3+3+3),(3+3)*4)
-
     trunk.draw()
-    // trunk2.draw()
+
+    trunk2.draw()
 
     GL.flush()
 
