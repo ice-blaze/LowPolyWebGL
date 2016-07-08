@@ -1,14 +1,17 @@
 "use strict"
 
 let LIBS={
-  degToRad: function(angle){
+
+  degToRad: function(){
+    const [angle] = arguments
     return(angle*Math.PI/180)
   },
 
-  get_projection: function(angle, a, zMin, zMax) {
-    var tan=Math.tan(LIBS.degToRad(0.5*angle)),
-        A=-(zMax+zMin)/(zMax-zMin),
-          B=(-2*zMax*zMin)/(zMax-zMin)
+  get_projection: function() {
+    const [angle, a, zMin, zMax] = arguments
+    const tan=Math.tan(LIBS.degToRad(0.5*angle))
+    const A=-(zMax+zMin)/(zMax-zMin)
+    const B=(-2*zMax*zMin)/(zMax-zMin)
 
     return [
       0.5/tan, 0 ,   0, 0,
@@ -25,10 +28,11 @@ let LIBS={
             0,0,0,1]
   },
 
-  rotateX: function(m, angle) {
-    var c=Math.cos(angle)
-    var s=Math.sin(angle)
-    var mv1=m[1], mv5=m[5], mv9=m[9]
+  rotateX: function() {
+    const [m, angle] = arguments
+    const c=Math.cos(angle)
+    const s=Math.sin(angle)
+    const mv1=m[1], mv5=m[5], mv9=m[9]
     m[1]=m[1]*c-m[2]*s
     m[5]=m[5]*c-m[6]*s
     m[9]=m[9]*c-m[10]*s
@@ -38,10 +42,11 @@ let LIBS={
     m[10]=m[10]*c+mv9*s
   },
 
-  rotateY: function(m, angle) {
-    var c=Math.cos(angle)
-    var s=Math.sin(angle)
-    var mv0=m[0], mv4=m[4], mv8=m[8]
+  rotateY: function() {
+    const [m, angle] = arguments
+    const c=Math.cos(angle)
+    const s=Math.sin(angle)
+    const mv0=m[0], mv4=m[4], mv8=m[8]
     m[0]=c*m[0]+s*m[2]
     m[4]=c*m[4]+s*m[6]
     m[8]=c*m[8]+s*m[10]
@@ -51,10 +56,11 @@ let LIBS={
     m[10]=c*m[10]-s*mv8
   },
 
-  rotateZ: function(m, angle) {
-    var c=Math.cos(angle)
-    var s=Math.sin(angle)
-    var mv0=m[0], mv4=m[4], mv8=m[8]
+  rotateZ: function() {
+    const [m, angle] = arguments
+    const c=Math.cos(angle)
+    const s=Math.sin(angle)
+    const mv0=m[0], mv4=m[4], mv8=m[8]
     m[0]=c*m[0]-s*m[1]
     m[4]=c*m[4]-s*m[5]
     m[8]=c*m[8]-s*m[9]
@@ -64,19 +70,24 @@ let LIBS={
     m[9]=c*m[9]+s*mv8
   },
 
-  translateX: function(m, t){
+  translateX: function(){
+    const [m, t] = arguments
     m[12]+=t
   },
 
-  translateY: function(m, t){
+  translateY: function(){
+    const [m, t] = arguments
     m[13]+=t
   },
 
-  translateZ: function(m, t){
+  translateZ: function(){
+    const [m, t] = arguments
     m[14]+=t
   },
 
-  Point: function(x,y,z){
+  //TODO CREATE A CLASSE YOU SHITTY
+  Point: function(){
+    const [x,y,z] = arguments
     return {
       "x":x,
       "y":y,
@@ -84,12 +95,13 @@ let LIBS={
     }
   },
 
-  pointLength:function(point){
+  pointLength:function(){
+    const [point] = arguments
     return Math.sqrt(point.x*point.x+point.y*point.y+point.z*point.z)
   },
 
   normalize:function(point){
-    var length = this.pointLength(point)
+    const length = this.pointLength(point)
 
     point.x /= length
     point.y /= length
@@ -98,65 +110,25 @@ let LIBS={
     return point
   },
 
-  calculateSurfaceNormal: function(p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z){
-    var U = this.Point(p2x-p1x,p2y-p1y,p2z-p1z)
-    var V = this.Point(p3x-p1x,p3y-p1y,p3z-p1z)
+  calculateSurfaceNormal: function(){
+    const [p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z] = arguments
+    const U = this.Point(p2x-p1x,p2y-p1y,p2z-p1z)
+    const V = this.Point(p3x-p1x,p3y-p1y,p3z-p1z)
 
     // convert into cross product
-    var normal = this.Point(0,0,0)
+    const normal = this.Point(0,0,0)
     normal.x = (U.y*V.z)-(U.z*V.y)
     normal.y = (U.z*V.x)-(U.x*V.z)
     normal.z = (U.x*V.y)-(U.y*V.x)
 
-    normal = this.normalize(normal)
-
-    return normal
-  },
-
-  drawTrunk: function (radiusTop,radiusBot,NB_FACES,height,r,g,b){
-    var t = 2 * Math.PI / NB_FACES
-    var i
-    var result = {}
-    result.vertices = []
-    var verticesUnique = [] // for performance reason they are not keep but could be just add to the result object
-    result.faces = []
-    for (i = 0; i < NB_FACES; ++i){
-      var xTop = radiusTop * Math.cos(t * i)
-      var yTop =  -radiusTop * Math.sin(t * i)
-
-      verticesUnique.push(this.Point(xTop,height,yTop))
-      var xBot = radiusBot * Math.cos(t * i)
-      var yBot = -radiusBot * Math.sin(t * i)
-      verticesUnique.push(this.Point(xBot,-10,yBot))
-    }
-
-    var DOUBLE_NB_FACES = NB_FACES*2
-    for(i=0; i<DOUBLE_NB_FACES; ++i){
-      var pt1=verticesUnique[(i)%DOUBLE_NB_FACES]
-      var pt2=verticesUnique[(i+1)%DOUBLE_NB_FACES]
-      var pt3=verticesUnique[(i+2)%DOUBLE_NB_FACES]
-
-      var normal
-      if(i%2){
-        normal = this.calculateSurfaceNormal(pt1.x,pt1.y,pt1.z,pt2.x,pt2.y,pt2.z,pt3.x,pt3.y,pt3.z)
-      }else{
-        normal = this.calculateSurfaceNormal(pt3.x,pt3.y,pt3.z,pt2.x,pt2.y,pt2.z,pt1.x,pt1.y,pt1.z)
-      }
-
-      result.vertices.push(pt1.x,pt1.y,pt1.z,r,g,b,normal.x,normal.y,normal.z)
-      result.vertices.push(pt2.x,pt2.y,pt2.z,r,g,b,normal.x,normal.y,normal.z)
-      result.vertices.push(pt3.x,pt3.y,pt3.z,r,g,b,normal.x,normal.y,normal.z)
-      result.faces.push(3*i,3*i+1,3*i+2)
-    }
-
-    return result
+    return this.normalize(normal)
   },
 
   drawLeaves: function (){
-    // var vertices[12][3]  /* 12 vertices with x, y, z coordinates */
-    // var Pi = 3.141592653589793238462643383279502884197
+    // let vertices[12][3]  /* 12 vertices with x, y, z coordinates */
+    // let Pi = 3.141592653589793238462643383279502884197
 
-	  // var phiaa  = 26.56505  /* phi needed for generation */
+	  // let phiaa  = 26.56505  /* phi needed for generation */
 	  // r = 1.0  /* any radius in which the polyhedron is inscribed */
 	  // phia = Pi*phiaa/180.0  /* 2 sets of four points */
 	  // theb = Pi*36.0/180.0   /* offset second set 36 degrees */
@@ -168,7 +140,7 @@ let LIBS={
 	  // vertices[11][1]=0.0
 	  // vertices[11][2]=-r
 	  // the = 0.0
-	  // for(var i=1  i<6  i++)
+	  // for(let i=1  i<6  i++)
 	  // {
       // vertices[i][0]=r*cos(the)*cos(phia)
       // vertices[i][1]=r*sin(the)*cos(phia)
@@ -176,7 +148,7 @@ let LIBS={
       // the = the+the72
 	  // }
 	  // the=theb
-	  // for(var i=6  i<11  i++)
+	  // for(let i=6  i<11  i++)
 	  // {
       // vertices[i][0]=r*cos(the)*cos(-phia)
       // vertices[i][1]=r*sin(the)*cos(-phia)

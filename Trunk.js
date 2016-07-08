@@ -1,10 +1,12 @@
 "use strict"
 
 class Trunk extends Object3D{
-  constructor(GL, SHADER_PROGRAM, radiusTop, radiusBot, NB_FACES, height, r, g, b){
-    super(GL)
+  constructor(){
+    const [GL, radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
+    const res = Trunk.generateTrunk(radiusTop, radiusBot, NB_FACES, height, r, g, b)
 
-    this.SHADER_PROGRAM = SHADER_PROGRAM
+    super(GL, res.vertices, res.faces)
+
     this.radiusTop = radiusTop
     this.radiusBot = radiusBot
     this.NB_FACES = NB_FACES
@@ -13,11 +15,9 @@ class Trunk extends Object3D{
     this.g = g
     this.b = b
 
-    this.generateTrunk()
-
-    this._color = GL.getAttribLocation(SHADER_PROGRAM, "color")
-    this._normal = GL.getAttribLocation(SHADER_PROGRAM, "normal")
-    this._position = GL.getAttribLocation(SHADER_PROGRAM, "position")
+    this._color = GL.getAttribLocation(this.SHADER_PROGRAM, "color")
+    this._normal = GL.getAttribLocation(this.SHADER_PROGRAM, "normal")
+    this._position = GL.getAttribLocation(this.SHADER_PROGRAM, "position")
 
     GL.enableVertexAttribArray(this._color)
     GL.enableVertexAttribArray(this._normal)
@@ -27,36 +27,51 @@ class Trunk extends Object3D{
   }
 
   draw(){
-    let GL = this.GL
+    const [PROJMATRIX, VIEWMATRIX, MOVEMATRIX] = arguments
+    const GL = this.GL
+
+    GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)
+
+    GL.useProgram(this.SHADER_PROGRAM)
+
+    GL.uniformMatrix4fv(this._Pmatrix, false, PROJMATRIX)
+    GL.uniformMatrix4fv(this._Vmatrix, false, VIEWMATRIX)
+    GL.uniformMatrix4fv(this._Mmatrix, false, this.MOVEMATRIX)
 
     GL.vertexAttribPointer(this._position, 3, GL.FLOAT, false,4*(3+3+3),0) // qu'est-ce qui se passe ici ?
     GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false,4*(3+3+3),3*4)
     GL.vertexAttribPointer(this._normal, 3, GL.FLOAT, false,4*(3+3+3),(3+3)*4)
 
-    super.draw()
+    GL.drawArrays(GL.POINTS, 0, this.vertices.length/9)
+    GL.drawElements(GL.TRIANGLES, this.faces.length, GL.UNSIGNED_SHORT, 0)
   }
 
-  generateTrunk(){
-    var t = 2 * Math.PI / this.NB_FACES
-    var i
-    this.vertices = []
-    var verticesUnique = [] // for performance reason they are not keep but could be just add to the super object
-    this.faces = []
-    for (i = 0; i < this.NB_FACES; ++i){
-      let xTop = this.radiusTop * Math.cos(t * i)
-      let yTop =  -this.radiusTop * Math.sin(t * i)
+  static generateTrunk(){
+    const [radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
+    const t = 2 * Math.PI / NB_FACES
+    let i
+    const res = {
+      'vertices':[],
+      'faces':[],
+    }
 
-      verticesUnique.push(LIBS.Point(xTop,this.height,yTop))
-      let xBot = this.radiusBot * Math.cos(t * i)
-      let yBot = -this.radiusBot * Math.sin(t * i)
+    const verticesUnique = [] // for performance reason they are not keep but could be just add to the super object
+    for (i = 0; i < NB_FACES; ++i){
+      const xTop = radiusTop * Math.cos(t * i)
+      const yTop =  -radiusTop * Math.sin(t * i)
+      verticesUnique.push(LIBS.Point(xTop, height, yTop))
+
+      const xBot = radiusBot * Math.cos(t * i)
+      const yBot = -radiusBot * Math.sin(t * i)
       verticesUnique.push(LIBS.Point(xBot,-10,yBot))
     }
 
-    const DOUBLE_NB_FACES = this.NB_FACES*2
+    const DOUBLE_NB_FACES = NB_FACES*2
     for(i=0; i<DOUBLE_NB_FACES; ++i){
-      let pt1=verticesUnique[(i)%DOUBLE_NB_FACES]
-      let pt2=verticesUnique[(i+1)%DOUBLE_NB_FACES]
-      let pt3=verticesUnique[(i+2)%DOUBLE_NB_FACES]
+      const pt1=verticesUnique[(i)%DOUBLE_NB_FACES]
+      const pt2=verticesUnique[(i+1)%DOUBLE_NB_FACES]
+      const pt3=verticesUnique[(i+2)%DOUBLE_NB_FACES]
 
       let normal
       if(i%2){
@@ -65,10 +80,11 @@ class Trunk extends Object3D{
         normal = LIBS.calculateSurfaceNormal(pt3.x,pt3.y,pt3.z,pt2.x,pt2.y,pt2.z,pt1.x,pt1.y,pt1.z)
       }
 
-      this.vertices.push(pt1.x,pt1.y,pt1.z,this.r,this.g,this.b,normal.x,normal.y,normal.z)
-      this.vertices.push(pt2.x,pt2.y,pt2.z,this.r,this.g,this.b,normal.x,normal.y,normal.z)
-      this.vertices.push(pt3.x,pt3.y,pt3.z,this.r,this.g,this.b,normal.x,normal.y,normal.z)
-      this.faces.push(3*i,3*i+1,3*i+2)
+      res.vertices.push(pt1.x,pt1.y,pt1.z,r,g,b,normal.x,normal.y,normal.z)
+      res.vertices.push(pt2.x,pt2.y,pt2.z,r,g,b,normal.x,normal.y,normal.z)
+      res.vertices.push(pt3.x,pt3.y,pt3.z,r,g,b,normal.x,normal.y,normal.z)
+      res.faces.push(3*i,3*i+1,3*i+2)
     }
+    return res
   }
 }
