@@ -7,8 +7,8 @@ const main=function() {
 
   /*==================  EVENTS  ============================*/
   const viewer = {
-    velocity:0.001,
-    pos:LIBS.Point(0,0,0)
+    velocity: 0.001,
+    pos: new Point(0,0,0)
   }
 
   let movementSpeed = 1

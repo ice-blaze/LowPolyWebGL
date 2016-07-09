@@ -60,11 +60,11 @@ class Trunk extends Object3D{
     for (i = 0; i < NB_FACES; ++i){
       const xTop = radiusTop * Math.cos(t * i)
       const yTop =  -radiusTop * Math.sin(t * i)
-      verticesUnique.push(LIBS.Point(xTop, height, yTop))
+      verticesUnique.push(new Point(xTop, height, yTop))
 
       const xBot = radiusBot * Math.cos(t * i)
       const yBot = -radiusBot * Math.sin(t * i)
-      verticesUnique.push(LIBS.Point(xBot,-10,yBot))
+      verticesUnique.push(new Point(xBot,-10,yBot))
     }
 
     const DOUBLE_NB_FACES = NB_FACES*2
@@ -75,9 +75,9 @@ class Trunk extends Object3D{
 
       let normal
       if(i%2){
-        normal = LIBS.calculateSurfaceNormal(pt1.x,pt1.y,pt1.z,pt2.x,pt2.y,pt2.z,pt3.x,pt3.y,pt3.z)
+        normal = Point.calculateSurfaceNormal(pt1, pt2, pt3)
       }else{
-        normal = LIBS.calculateSurfaceNormal(pt3.x,pt3.y,pt3.z,pt2.x,pt2.y,pt2.z,pt1.x,pt1.y,pt1.z)
+        normal = Point.calculateSurfaceNormal(pt3, pt2, pt1)
       }
 
       res.vertices.push(pt1.x,pt1.y,pt1.z,r,g,b,normal.x,normal.y,normal.z)
