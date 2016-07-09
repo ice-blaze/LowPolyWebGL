@@ -27,24 +27,16 @@ class Trunk extends Object3D{
   }
 
   draw(){
-    const [PROJMATRIX, VIEWMATRIX, MOVEMATRIX] = arguments
+    const [PROJMATRIX, VIEWMATRIX] = arguments
     const GL = this.GL
 
-    GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)
-
-    GL.useProgram(this.SHADER_PROGRAM)
-
-    GL.uniformMatrix4fv(this._Pmatrix, false, PROJMATRIX)
-    GL.uniformMatrix4fv(this._Vmatrix, false, VIEWMATRIX)
-    GL.uniformMatrix4fv(this._Mmatrix, false, this.MOVEMATRIX)
+    super.bindBuffers()
 
     GL.vertexAttribPointer(this._position, 3, GL.FLOAT, false,4*(3+3+3),0) // qu'est-ce qui se passe ici ?
     GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false,4*(3+3+3),3*4)
     GL.vertexAttribPointer(this._normal, 3, GL.FLOAT, false,4*(3+3+3),(3+3)*4)
 
-    GL.drawArrays(GL.POINTS, 0, this.vertices.length/9)
-    GL.drawElements(GL.TRIANGLES, this.faces.length, GL.UNSIGNED_SHORT, 0)
+    super.draw(PROJMATRIX, VIEWMATRIX)
   }
 
   static generateTrunk(){

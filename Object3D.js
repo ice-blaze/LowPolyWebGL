@@ -75,8 +75,22 @@ class Object3D {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.faces), GL.STATIC_DRAW)
   }
 
+  bindBuffers(){
+    const GL = this.GL
+
+    GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)
+  }
+
   draw(){
     const GL = this.GL
+    const [PROJMATRIX, VIEWMATRIX] = arguments
+
+    GL.useProgram(this.SHADER_PROGRAM)
+
+    GL.uniformMatrix4fv(this._Pmatrix, false, PROJMATRIX)
+    GL.uniformMatrix4fv(this._Vmatrix, false, VIEWMATRIX)
+    GL.uniformMatrix4fv(this._Mmatrix, false, this.MOVEMATRIX)
 
     GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)
