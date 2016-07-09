@@ -35,7 +35,6 @@ class Point{
 
   static calculateSurfaceNormal(){
     const [p1, p2, p3] = arguments
-    // const [p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z] = arguments
     const U = new Point(p2.x-p1.x, p2.y-p1.y, p2.z-p1.z)
     const V = new Point(p3.x-p1.x, p3.y-p1.y, p3.z-p1.z)
 
@@ -133,72 +132,4 @@ let LIBS={
     const [m, t] = arguments
     m[14]+=t
   },
-
-  calculateSurfaceNormal: function(){
-    const [p1x,p1y,p1z,p2x,p2y,p2z,p3x,p3y,p3z] = arguments
-    const U = new Point(p2x-p1x,p2y-p1y,p2z-p1z)
-    const V = new Point(p3x-p1x,p3y-p1y,p3z-p1z)
-
-    // convert into cross product
-    const normal = new Point(0,0,0)
-    normal.x = (U.y*V.z)-(U.z*V.y)
-    normal.y = (U.z*V.x)-(U.x*V.z)
-    normal.z = (U.x*V.y)-(U.y*V.x)
-
-    return normal.normalize()
-  },
-
-  drawLeaves: function (){
-    // let vertices[12][3]  /* 12 vertices with x, y, z coordinates */
-    // let Pi = 3.141592653589793238462643383279502884197
-
-	  // let phiaa  = 26.56505  /* phi needed for generation */
-	  // r = 1.0  /* any radius in which the polyhedron is inscribed */
-	  // phia = Pi*phiaa/180.0  /* 2 sets of four points */
-	  // theb = Pi*36.0/180.0   /* offset second set 36 degrees */
-	  // the72 = Pi*72.0/180    /* step 72 degrees */
-	  // vertices[0][0]=0.0
-	  // vertices[0][1]=0.0
-	  // vertices[0][2]=r
-	  // vertices[11][0]=0.0
-	  // vertices[11][1]=0.0
-	  // vertices[11][2]=-r
-	  // the = 0.0
-	  // for(let i=1  i<6  i++)
-	  // {
-      // vertices[i][0]=r*cos(the)*cos(phia)
-      // vertices[i][1]=r*sin(the)*cos(phia)
-      // vertices[i][2]=r*sin(phia)
-      // the = the+the72
-	  // }
-	  // the=theb
-	  // for(let i=6  i<11  i++)
-	  // {
-      // vertices[i][0]=r*cos(the)*cos(-phia)
-      // vertices[i][1]=r*sin(the)*cos(-phia)
-      // vertices[i][2]=r*sin(-phia)
-      // the = the+the72
-	  // }
-
-    // polygon(0,1,2)
-    // polygon(0,2,3)
-    // polygon(0,3,4)
-    // polygon(0,4,5)
-    // polygon(0,5,1)
-    // polygon(11,6,7)
-    // polygon(11,7,8)
-    // polygon(11,8,9)
-    // polygon(11,9,10)
-    // polygon(11,10,6)
-    // polygon(1,2,6)
-    // polygon(2,3,7)
-    // polygon(3,4,8)
-    // polygon(4,5,9)
-    // polygon(5,1,10)
-    // polygon(6,7,2)
-    // polygon(7,8,3)
-    // polygon(8,9,4)
-    // polygon(9,10,5)
-    // polygon(10,6,1)
-  }
 }

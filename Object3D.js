@@ -3,14 +3,13 @@
 class Object3D {
 
   constructor() {
-    const [GL, vertices, faces] = arguments
+    const [GL, vertices, faces, vertex_shader, fragment_shader, r, g, b] = arguments
     this.GL = GL
     this.vertices = vertices
     this.faces = faces
 
-    // Shader Management
-    this.shader_vertex=this.get_shader(SHADERS.flat_vs, GL.VERTEX_SHADER, "VERTEX")
-    this.shader_fragment=this.get_shader(SHADERS.flat_fs, GL.FRAGMENT_SHADER, "FRAGMENT")
+    this.shader_vertex=this.get_vertex_shader(vertex_shader)
+    this.shader_fragment=this.get_fragment_shader(fragment_shader)
 
     const SHADER_PROGRAM=GL.createProgram()
     GL.attachShader(SHADER_PROGRAM, this.shader_vertex)
@@ -22,6 +21,18 @@ class Object3D {
     this._Vmatrix = GL.getUniformLocation(SHADER_PROGRAM, "Vmatrix")
     this._Mmatrix = GL.getUniformLocation(SHADER_PROGRAM, "Mmatrix")
     this.SHADER_PROGRAM = SHADER_PROGRAM
+
+    this.r = r
+    this.g = g
+    this.b = b
+
+    this._color = GL.getAttribLocation(this.SHADER_PROGRAM, "color")
+    this._normal = GL.getAttribLocation(this.SHADER_PROGRAM, "normal")
+    this._position = GL.getAttribLocation(this.SHADER_PROGRAM, "position")
+
+    GL.enableVertexAttribArray(this._color)
+    GL.enableVertexAttribArray(this._normal)
+    GL.enableVertexAttribArray(this._position)
 
     // Matrix Management
     this.MOVEMATRIX=LIBS.get_I4()
@@ -54,6 +65,18 @@ class Object3D {
     return shader
   }
 
+  get_fragment_shader() {
+    const [source, type] = arguments
+    const GL = this.GL
+    return this.get_shader(source, GL.FRAGMENT_SHADER, "FRAGMENT")
+  }
+
+  get_vertex_shader() {
+    const [source, type] = arguments
+    const GL = this.GL
+    return this.get_shader(source, GL.VERTEX_SHADER, "VERTEX")
+  }
+
   initBuffers(){
     if(!this.vertices){
       console.error("Warning, trying to initBuffers without vertices");
@@ -67,12 +90,12 @@ class Object3D {
     const GL = this.GL
 
     this.VERTEX_BUFFER = GL.createBuffer ()
-    GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
-    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(this.vertices), GL.STATIC_DRAW)
-
     this.FACES_BUFFER = GL.createBuffer ()
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)
+
+    this.bindBuffers()
+
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.faces), GL.STATIC_DRAW)
+    GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(this.vertices), GL.STATIC_DRAW)
   }
 
   bindBuffers(){
@@ -85,6 +108,12 @@ class Object3D {
   draw(){
     const GL = this.GL
     const [PROJMATRIX, VIEWMATRIX] = arguments
+
+    this.bindBuffers()
+
+    GL.vertexAttribPointer(this._position, 3, GL.FLOAT, false,4*(3+3+3),0) // qu'est-ce qui se passe ici ?
+    GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false,4*(3+3+3),3*4)
+    GL.vertexAttribPointer(this._normal, 3, GL.FLOAT, false,4*(3+3+3),(3+3)*4)
 
     GL.useProgram(this.SHADER_PROGRAM)
 
@@ -99,6 +128,5 @@ class Object3D {
   }
 
   translateX(){
-
   }
 }

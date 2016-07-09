@@ -1,45 +1,19 @@
 "use strict"
 
-class Trunk extends Object3D{
+class Trunk extends FlatShadingObj{
   constructor(){
     const [GL, radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
-    const res = Trunk.generateTrunk(radiusTop, radiusBot, NB_FACES, height, r, g, b)
+    const res = Trunk.generate(radiusTop, radiusBot, NB_FACES, height, r, g, b)
 
-    super(GL, res.vertices, res.faces)
+    super(GL, res.vertices, res.faces, r, g, b)
 
     this.radiusTop = radiusTop
     this.radiusBot = radiusBot
     this.NB_FACES = NB_FACES
     this.height = height
-    this.r = r
-    this.g = g
-    this.b = b
-
-    this._color = GL.getAttribLocation(this.SHADER_PROGRAM, "color")
-    this._normal = GL.getAttribLocation(this.SHADER_PROGRAM, "normal")
-    this._position = GL.getAttribLocation(this.SHADER_PROGRAM, "position")
-
-    GL.enableVertexAttribArray(this._color)
-    GL.enableVertexAttribArray(this._normal)
-    GL.enableVertexAttribArray(this._position)
-
-    this.initBuffers()
   }
 
-  draw(){
-    const [PROJMATRIX, VIEWMATRIX] = arguments
-    const GL = this.GL
-
-    super.bindBuffers()
-
-    GL.vertexAttribPointer(this._position, 3, GL.FLOAT, false,4*(3+3+3),0) // qu'est-ce qui se passe ici ?
-    GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false,4*(3+3+3),3*4)
-    GL.vertexAttribPointer(this._normal, 3, GL.FLOAT, false,4*(3+3+3),(3+3)*4)
-
-    super.draw(PROJMATRIX, VIEWMATRIX)
-  }
-
-  static generateTrunk(){
+  static generate(){
     const [radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
     const t = 2 * Math.PI / NB_FACES
     let i
