@@ -2,19 +2,18 @@
 
 class Trunk extends FlatShadingObj{
   constructor(){
-    const [GL, radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
-    const res = Trunk.generate(radiusTop, radiusBot, NB_FACES, height, r, g, b)
+    const [GL, radiusTop, radiusBot, NB_FACES, r, g, b] = arguments
+    const res = Trunk.generate(radiusTop, radiusBot, NB_FACES, r, g, b)
 
     super(GL, res.vertices, res.faces, r, g, b)
 
     this.radiusTop = radiusTop
     this.radiusBot = radiusBot
     this.NB_FACES = NB_FACES
-    this.height = height
   }
 
   static generate(){
-    const [radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
+    const [radiusTop, radiusBot, NB_FACES, r, g, b] = arguments
     const t = 2 * Math.PI / NB_FACES
     let i
     const res = {
@@ -26,11 +25,11 @@ class Trunk extends FlatShadingObj{
     for (i = 0; i < NB_FACES; ++i){
       const xTop = radiusTop * Math.cos(t * i)
       const yTop =  -radiusTop * Math.sin(t * i)
-      verticesUnique.push(new Point(xTop, height, yTop))
+      verticesUnique.push(new Point(xTop, 1, yTop))
 
       const xBot = radiusBot * Math.cos(t * i)
       const yBot = -radiusBot * Math.sin(t * i)
-      verticesUnique.push(new Point(xBot,-10,yBot))
+      verticesUnique.push(new Point(xBot, 0, yBot))
     }
 
     const DOUBLE_NB_FACES = NB_FACES*2

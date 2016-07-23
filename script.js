@@ -68,9 +68,9 @@ const main=function() {
     return false
   }
 
-  const trunk = new Trunk(GL, 1, 2, 6, 3, 0.5, 0.13, 0.)
+  const trunk = new Trunk(GL, 1, 2, 6, 0.5, 0.13, 0.)
 
-  const trunk2 = new Trunk(GL, 1, 1, 7, 3, 0.5, 1., 0.)
+  const trunk2 = new Leaves(GL, 10, 10, 0.5, 1., 0.)
 
   /*========================= MATRIX ========================= */
 
@@ -98,7 +98,7 @@ const main=function() {
     GL.viewport(0, 0, GL.drawingBufferWidth, GL.drawingBufferHeight)
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT)
 
-    trunk.rotateX(dt*0.0015)
+    trunk2.rotateX(dt*0.0015)
     trunk.draw(PROJMATRIX, VIEWMATRIX)
 
     trunk2.draw(PROJMATRIX, VIEWMATRIX)

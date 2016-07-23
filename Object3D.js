@@ -127,6 +127,13 @@ class Object3D {
     GL.drawElements(GL.TRIANGLES, this.faces.length, GL.UNSIGNED_SHORT, 0)
   }
 
+  static addFace(vertices, faces, pt1, pt2, pt3, color, normal, faceIdx){
+    vertices.push(pt1.x, pt1.y, pt1.z, color.x, color.y, color.z, normal.x, normal.y, normal.z)
+    vertices.push(pt2.x, pt2.y, pt2.z, color.x, color.y, color.z, normal.x, normal.y, normal.z)
+    vertices.push(pt3.x, pt3.y, pt3.z, color.x, color.y, color.z, normal.x, normal.y, normal.z)
+    return faces.push(faceIdx++, faceIdx++, faceIdx++)
+  }
+
   translateX(){
   }
 }

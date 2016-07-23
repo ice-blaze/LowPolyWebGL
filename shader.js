@@ -14,7 +14,7 @@ class SHADERS {
       varying vec3 vView;
       void main(void) { //pre-built function
         gl_Position = Pmatrix*Vmatrix*Mmatrix*vec4(position, 1.);
-        gl_PointSize=10.;
+        gl_PointSize=1.;
         vColor=color;
         vNormal = vec3(Mmatrix * vec4(normal, 0.));
         // vNormal = normal;

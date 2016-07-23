@@ -2,70 +2,81 @@
 
 class Leaves extends FlatShadingObj{
   constructor(){
-    const [GL, radiusTop, radiusBot, NB_FACES, height, r, g, b] = arguments
-    const res = Leaves.generateTrunk(r, g, b)
+    const [GL, NB_FACES, NB_SLICES, r, g, b] = arguments
+    const res = Leaves.generate(NB_FACES, NB_SLICES, r, g, b)
 
     super(GL, res.vertices, res.faces, r, g, b)
 
-    this.radiusTop = radiusTop
-    this.radiusBot = radiusBot
     this.NB_FACES = NB_FACES
-    this.height = height
+    this.NB_SLICES = NB_SLICES
   }
 
   static generate(){
-    const [r, g, b] = arguments
+    const [_NB_FACES, _NB_SLICES, r, g, b] = arguments
+    const color = new Point(r, g, b)
+    const NB_FACES = _NB_FACES
+    const NB_SLICES = _NB_SLICES
 
-    // let vertices[12][3]  /* 12 vertices with x, y, z coordinates */
-    // let Pi = 3.141592653589793238462643383279502884197
+    const verticesUnique = []
+    const res = {
+      'vertices':[],
+      'faces':[],
+    }
 
-    // let phiaa  = 26.56505  /* phi needed for generation */
-    // r = 1.0  /* any radius in which the polyhedron is inscribed */
-    // phia = Pi*phiaa/180.0  /* 2 sets of four points */
-    // theb = Pi*36.0/180.0   /* offset second set 36 degrees */
-    // the72 = Pi*72.0/180    /* step 72 degrees */
-    // vertices[0][0]=0.0
-    // vertices[0][1]=0.0
-    // vertices[0][2]=r
-    // vertices[11][0]=0.0
-    // vertices[11][1]=0.0
-    // vertices[11][2]=-r
-    // the = 0.0
-    // for(let i=1  i<6  i++)
-    // {
-      // vertices[i][0]=r*cos(the)*cos(phia)
-      // vertices[i][1]=r*sin(the)*cos(phia)
-      // vertices[i][2]=r*sin(phia)
-      // the = the+the72
-    // }
-    // the=theb
-    // for(let i=6  i<11  i++)
-    // {
-      // vertices[i][0]=r*cos(the)*cos(-phia)
-      // vertices[i][1]=r*sin(the)*cos(-phia)
-      // vertices[i][2]=r*sin(-phia)
-      // the = the+the72
-    // }
+    let i = 0
+    let j = 0
 
-    // polygon(0,1,2)
-    // polygon(0,2,3)
-    // polygon(0,3,4)
-    // polygon(0,4,5)
-    // polygon(0,5,1)
-    // polygon(11,6,7)
-    // polygon(11,7,8)
-    // polygon(11,8,9)
-    // polygon(11,9,10)
-    // polygon(11,10,6)
-    // polygon(1,2,6)
-    // polygon(2,3,7)
-    // polygon(3,4,8)
-    // polygon(4,5,9)
-    // polygon(5,1,10)
-    // polygon(6,7,2)
-    // polygon(7,8,3)
-    // polygon(8,9,4)
-    // polygon(9,10,5)
-    // polygon(10,6,1)
+    // draw cercle de points
+    const t = 2 * Math.PI / NB_FACES
+    const HALF_PI = 3.14159265359/2
+    for (i = 0; i < NB_SLICES; ++i){
+      const height = ((2 / (NB_SLICES + 1)) * (i + 1))-1
+      const radius = Math.cos(height * HALF_PI)
+      // console.log(height);
+      for (j = 0; j < NB_FACES; ++j){
+        const xTop = radius * Math.cos(t * j)
+        const yTop =  -radius * Math.sin(t * j)
+        verticesUnique.push(new Point(xTop, height, yTop))
+      }
+    }
+
+    let idx=0
+    //top
+    for(i=0; i<NB_FACES; i+=1){
+      let pt1 = verticesUnique[i]
+      let pt2 = verticesUnique[(i+1)%NB_FACES]
+      const pt3 = new Point(0, -1, 0)
+      const normal = Point.calculateSurfaceNormal(pt1, pt2, pt3)
+
+      idx = Object3D.addFace(res.vertices, res.faces, pt2, pt1, pt3, color, normal, idx)
+    }
+
+    const LAST_SLICE = NB_FACES*(NB_SLICES-1)
+
+    for(i=0; i<LAST_SLICE; i+=1){
+      const face = i%NB_FACES
+      let level = Math.floor(i/NB_FACES)
+      const pt1 = verticesUnique[face+NB_FACES*level]
+      const pt2 = verticesUnique[((face+1)%NB_FACES)+NB_FACES*level]
+      const pt3 = verticesUnique[face+NB_FACES*(level+1)]
+      const pt4 = verticesUnique[((face+1)%NB_FACES)+NB_FACES*(level+1)]
+
+      const normal1 = Point.calculateSurfaceNormal(pt3, pt2, pt1)
+      const normal2 = Point.calculateSurfaceNormal(pt2, pt3, pt4)
+      idx = Object3D.addFace(res.vertices, res.faces, pt1, pt2, pt3, color, normal1, idx)
+      idx = Object3D.addFace(res.vertices, res.faces, pt2, pt3, pt4, color, normal2, idx)
+    }
+
+    //bottom
+    for(i=0; i<NB_FACES; i+=1){
+      let pt1 = verticesUnique[LAST_SLICE+i]
+      let pt2 = verticesUnique[LAST_SLICE+(i+1)%NB_FACES]
+      const pt3 = new Point(0, 1, 0)
+      const normal = Point.calculateSurfaceNormal(pt2, pt1, pt3)
+
+      idx = Object3D.addFace(res.vertices, res.faces, pt2, pt1, pt3, color, normal, idx)
+    }
+
+    return res
   }
 }
