@@ -48,6 +48,51 @@ class Point{
   }
 }
 
+class Mat4{
+  constructor(){
+    const [pt1, pt2, pt3] = arguments
+    this.m = [1,0,0,0,
+              0,1,0,0,
+              0,0,1,0,
+              0,0,0,1]
+  }
+
+  translate(){
+    const [pt] = arguments
+    this.m[12] = pt.x
+    this.m[13] = pt.y
+    this.m[14] = pt.z
+  }
+
+  static getIdentary(){
+    return new Mat4()
+  }
+
+  static getEmpty(){
+    let res = new Mat4()
+    res.m = [0,0,0,0,
+             0,0,0,0,
+             0,0,0,0,
+             0,0,0,0]
+    return res
+  }
+
+  static add(mat1, mat2){
+    let res = new Mat4()
+    let i
+    for(i=12; i<15; ++i){
+      res.m[i] = mat1.m[i] + mat2.m[i]
+    }
+    return res
+  }
+
+  static mul(){
+    for (let mat in arguments){
+      // console.log(arguments);
+    }
+  }
+}
+
 let LIBS={
 
   degToRad: function(){
@@ -74,6 +119,13 @@ let LIBS={
             0,1,0,0,
             0,0,1,0,
             0,0,0,1]
+  },
+
+  get_Empty_4: function() {
+    return [0,0,0,0,
+            0,0,0,0,
+            0,0,0,0,
+            0,0,0,0]
   },
 
   rotateX: function() {

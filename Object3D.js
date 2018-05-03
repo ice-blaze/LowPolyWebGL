@@ -1,9 +1,13 @@
 "use strict"
 
-class Object3D {
+class Object3D extends GameObject{
 
   constructor() {
     const [GL, vertices, faces, vertex_shader, fragment_shader, r, g, b] = arguments
+
+    super()
+
+    this.GO = new GameObject()
     this.GL = GL
     this.vertices = vertices
     this.faces = faces
@@ -35,7 +39,8 @@ class Object3D {
     GL.enableVertexAttribArray(this._position)
 
     // Matrix Management
-    this.MOVEMATRIX=LIBS.get_I4()
+    // this.MOVEMATRIX=LIBS.get_I4()
+    this.MOVEMATRIX = new Mat4()
 
     // Buffer Management
     this.VERTEX_BUFFER = GL.createBuffer ()
@@ -47,10 +52,10 @@ class Object3D {
     GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(faces), GL.STATIC_DRAW)
   }
 
-  rotateX(){
-    const [angle] = arguments
-    LIBS.rotateX(this.MOVEMATRIX, angle)
-  }
+  // rotateX(){
+  //   const [angle] = arguments
+  //   LIBS.rotateX(this.MOVEMATRIX, angle)
+  // }
 
   get_shader() {
     const [source, type, typeString] = arguments
@@ -119,7 +124,9 @@ class Object3D {
 
     GL.uniformMatrix4fv(this._Pmatrix, false, PROJMATRIX)
     GL.uniformMatrix4fv(this._Vmatrix, false, VIEWMATRIX)
-    GL.uniformMatrix4fv(this._Mmatrix, false, this.MOVEMATRIX)
+    // Mat4.mul(this.translateMatrix, this.MOVEMATRIX.m)
+    GL.uniformMatrix4fv(this._Mmatrix, false, this.getAllTranslateMatrix().m)
+    // GL.uniformMatrix4fv(this._Mmatrix, false, this.MOVEMATRIX.m)
 
     GL.bindBuffer(GL.ARRAY_BUFFER, this.VERTEX_BUFFER)
     GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.FACES_BUFFER)

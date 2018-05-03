@@ -68,9 +68,14 @@ const main=function() {
     return false
   }
 
+  const tree = new GameObject()
+
   const trunk = new Trunk(GL, 1, 2, 6, 0.5, 0.13, 0.)
 
   const trunk2 = new Leaves(GL, 10, 10, 0.5, 1., 0.)
+
+  tree.addChildren(trunk)
+  tree.addChildren(trunk2)
 
   /*========================= MATRIX ========================= */
 
@@ -86,6 +91,8 @@ const main=function() {
   GL.clearColor(0.0, 0.0, 0.0, 0.0)
   GL.clearDepth(1.0)
 
+  let pos=0
+
   let time_old=0
   const animate=function(time) {
     const dt=time-time_old
@@ -98,7 +105,10 @@ const main=function() {
     GL.viewport(0, 0, GL.drawingBufferWidth, GL.drawingBufferHeight)
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT)
 
-    trunk2.rotateX(dt*0.0015)
+    pos+=0.01
+    tree.setPosition(new Point(pos,0,0))
+
+    // trunk2.rotateX(dt*0.0015)
     trunk.draw(PROJMATRIX, VIEWMATRIX)
 
     trunk2.draw(PROJMATRIX, VIEWMATRIX)

@@ -17,7 +17,6 @@ class SHADERS {
         gl_PointSize=1.;
         vColor=color;
         vNormal = vec3(Mmatrix * vec4(normal, 0.));
-        // vNormal = normal;
       }`
   }
 
